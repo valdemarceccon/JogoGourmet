@@ -3,8 +3,8 @@ package view;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
-import javafx.scene.control.TextInputDialog;
 import model.TreeNode;
+import view.widget.DialogFimDerrota;
 import view.widget.DialogPerguntaPrato;
 
 import java.text.MessageFormat;
@@ -26,21 +26,21 @@ public class RootView {
         dialogPerguntaPrato = new DialogPerguntaPrato(this::sim, this::nao);
     }
 
-    private void nao(TreeNode<String> node) {
+    private void nao(final TreeNode<String> node) {
         if (node.isFolha() || node.getProxImao() == null) {
-            final TextInputDialog dialog = new TextInputDialog();
-            dialog.setTitle("Não sei no que você pensou");
-            dialog.setHeaderText(null);
-
-            dialog.setContentText("Qual é a comida que você pensou?:");
-            dialog.showAndWait().ifPresent(comida -> {
-                dialog.setContentText(MessageFormat.format("{0} é __________ e {1} não:", comida, node.getValor()));
-                dialog.showAndWait().ifPresent(caract -> node.getPai().addNode(caract).addNode(comida));
-            });
-
+            new DialogFimDerrota("Qual prato você pensou?").show(comida -> afterComida(node, comida));
         } else {
             dialogPerguntaPrato.show(node.getProxImao());
         }
+    }
+
+    private void afterComida(final TreeNode<String> node, final String comida) {
+        final String message = MessageFormat.format("{0} é __________ e {1} não:", comida, node.getValor());
+        new DialogFimDerrota(message).show(caract -> afterCaracteristica(node, caract, comida));
+    }
+
+    private void afterCaracteristica(final TreeNode<String> node, final String caracteristica, final String comida) {
+        node.getPai().addNode(caracteristica).addNode(comida);
     }
 
     private void sim(TreeNode<String> node) {
