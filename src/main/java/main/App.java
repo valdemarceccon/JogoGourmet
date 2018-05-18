@@ -21,7 +21,7 @@ public class App extends Application {
         loader.setLocation(getClass().getResource("/view/RootView.fxml"));
         final Parent root = loader.load();
 
-        final Scene scene = new Scene(root, 400, 200);
+        final Scene scene = new Scene(root);
 
         primaryStage.setScene(scene);
         primaryStage.setTitle("JogoGourmet");

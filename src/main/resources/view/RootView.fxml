@@ -7,14 +7,17 @@
 <AnchorPane xmlns:fx="http://javafx.com/fxml"
             xmlns="http://javafx.com/javafx"
             fx:controller="view.RootView"
-            prefHeight="400.0" prefWidth="600.0">
+            prefHeight="200.0" prefWidth="600.0">
     <stylesheets>
         <URL value="@RootView.css"/>
     </stylesheets>
-    <HBox AnchorPane.topAnchor="5.0" alignment="CENTER" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0">
-        <Label id="welcomeLbl" text="Bem-vindo ao JogoGourmet"/>
-    </HBox>
+    <VBox AnchorPane.topAnchor="5.0" alignment="CENTER" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0">
+        <Label text="Bem-vindo ao JogoGourmet"/>
+        <Label text="Pense em um prato de comida, mas não me diga qual!"/>
+    </VBox>
 
-    <Button text="Iniciar" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.bottomAnchor="5.0"/>
+    <Button AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.bottomAnchor="5.0"
+            text="Ok, pensei!" onAction="#iniciarClickHandle"
+    />
 
 </AnchorPane>

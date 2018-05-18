@@ -1,9 +1,6 @@
 package view;
 
-import model.Comida;
-
-import java.util.LinkedList;
-import java.util.List;
+import model.TreeNode;
 
 /**
  * ViewModel do Root.
@@ -13,13 +10,20 @@ import java.util.List;
  */
 class RootViewModel {
 
-    private final List<Comida> comidas;
+    private final TreeNode<String> root;
 
     RootViewModel() {
-        // TODO: Criar lista incial de comidas
-        comidas = new LinkedList<>();
+        this.root = new TreeNode<>(null, "ROOT");
+
+        /* Valores iniciais, conforme aplicativo de exemplo */
+        this.root.addNode("Massa").addNode("Lasanha");
+        this.root.addNode("Bolo").addNode("Bolo de chocolate");
     }
 
     // TODO: Cria eventos para manipular e encontrar comidas na lista
 
+
+    public TreeNode<String> getRoot() {
+        return root;
+    }
 }
