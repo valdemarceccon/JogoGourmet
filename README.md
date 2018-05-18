@@ -14,9 +14,9 @@ A pasta build será gerada com os fontes compilados.
 
 Para rodar direto pelo gradle executar o comando
 
-´´´
+```
 ./gradlew run
-´´´
+```
 ### Prerequisites
 
 JDK 8
@@ -28,7 +28,7 @@ JDK 8
 
 ## Versionamento
 
-Utilizado o guideline [SemVer](http://semver.org/). As versões disponível podem ser verificadas através das [tags neste repositório](https://github.com/your/project/tags).
+Utilizado o guideline [SemVer](http://semver.org/). As versões disponível podem ser verificadas através das [tags neste repositório](https://github.com/valdemarceccon/JogoGourmet/tags).
 
 ## Authors
 
