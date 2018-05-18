@@ -5,6 +5,7 @@ import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import model.TreeNode;
 
+import java.text.MessageFormat;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -28,7 +29,11 @@ public class DialogPerguntaPrato extends Alert {
 
     public void show(final TreeNode<String> node) {
         this.setTitle("É este?");
-        this.setContentText(node.getValor());
+        if (node.isFolha()) {
+            this.setContentText(MessageFormat.format("Você pensou em {0}?", node.getValor().toLowerCase()));
+        } else {
+            this.setContentText(MessageFormat.format("Por acaso a comida que você pensou é {0}?", node.getValor().toLowerCase()));
+        }
 
         final Optional<ButtonType> buttonType = this.showAndWait();
 

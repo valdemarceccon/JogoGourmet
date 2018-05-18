@@ -2,8 +2,12 @@ package view;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.TextInputDialog;
 import model.TreeNode;
 import view.widget.DialogPerguntaPrato;
+
+import java.text.MessageFormat;
 
 
 /**
@@ -22,20 +26,32 @@ public class RootView {
         dialogPerguntaPrato = new DialogPerguntaPrato(this::sim, this::nao);
     }
 
-    private void nao(TreeNode<String> tTreeNode) {
-        if (tTreeNode.isFolha()) {
-            // fim - derrota
-        } else if (tTreeNode.getProxImao() != null) {
-            dialogPerguntaPrato.show(tTreeNode.getProxImao());
-        }
+    private void nao(TreeNode<String> node) {
+        if (node.isFolha() || node.getProxImao() == null) {
+            final TextInputDialog dialog = new TextInputDialog();
+            dialog.setTitle("Não sei no que você pensou");
+            dialog.setHeaderText(null);
 
+            dialog.setContentText("Qual é a comida que você pensou?:");
+            dialog.showAndWait().ifPresent(comida -> {
+                dialog.setContentText(MessageFormat.format("{0} é __________ e {1} não:", comida, node.getValor()));
+                dialog.showAndWait().ifPresent(caract -> node.getPai().addNode(caract).addNode(comida));
+            });
+
+        } else {
+            dialogPerguntaPrato.show(node.getProxImao());
+        }
     }
 
-    private void sim(TreeNode<String> tTreeNode) {
-        if (tTreeNode.isFolha()) {
-            // fim - vitória
+    private void sim(TreeNode<String> node) {
+        if (node.isFolha()) {
+            final Alert messageSucesso = new Alert(Alert.AlertType.INFORMATION);
+            messageSucesso.setHeaderText(null);
+            messageSucesso.setTitle("Sucesso!");
+            messageSucesso.setContentText(MessageFormat.format("Acertei {0}. Cada um com seu gosto!", node.getValor()));
+            messageSucesso.showAndWait();
         } else {
-            dialogPerguntaPrato.show(tTreeNode.getFilhos().get(0));
+            dialogPerguntaPrato.show(node.getFilhos().get(0));
         }
     }
 
