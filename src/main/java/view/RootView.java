@@ -57,7 +57,7 @@ public class RootView {
         nomeDialog.setContentText("Qual o prato que você pensou?");
         Optional<String> nomeOptional = nomeDialog.showAndWait();
 
-        if (nomeOptional.isPresent()) {
+        if (nomeOptional.isPresent() && !nomeOptional.get().trim().isEmpty()) {
             final String nome = nomeOptional.get();
 
             final TextInputDialog caracteristicaDialog = new TextInputDialog();
@@ -70,7 +70,7 @@ public class RootView {
 
             final Optional<String> caractOptional = caracteristicaDialog.showAndWait();
 
-            if (caractOptional.isPresent()) {
+            if (caractOptional.isPresent() && !caractOptional.get().trim().isEmpty()) {
                 final String caracteristica = caractOptional.get();
 
                 return new Prato(nome, caracteristica);
