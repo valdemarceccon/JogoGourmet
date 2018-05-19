@@ -53,11 +53,13 @@ class RootViewModel {
     }
 
     private void palpite(final TreeNode<Prato> pratoNode) {
-        final Boolean result = onPalpite.apply(pratoNode);
-        if (pratoNode != root && result != null && result) {
+
+        final Boolean result = pratoNode == root ? null : onPalpite.apply(pratoNode);
+        if (result != null && result) {
             onVitoria.accept(pratoNode.getValor());
         } else {
             Optional.ofNullable(onDerrota.apply(pratoNode.getValor())).ifPresent(pratoNode::addNode);
         }
+
     }
 }

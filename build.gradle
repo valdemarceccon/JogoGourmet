@@ -5,6 +5,12 @@ plugins {
 
 mainClassName = 'main.App'
 
+jar {
+    manifest {
+        attributes 'Main-Class': mainClassName
+    }
+}
+
 sourceCompatibility=JavaVersion.VERSION_1_8
 targetCompatibility=JavaVersion.VERSION_1_8
 
