@@ -3,7 +3,7 @@ plugins {
     id 'application'
 }
 
-mainClassName = 'App'
+mainClassName = 'main.App'
 
 sourceCompatibility=JavaVersion.VERSION_1_8
 targetCompatibility=JavaVersion.VERSION_1_8
