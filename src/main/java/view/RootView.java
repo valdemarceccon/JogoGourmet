@@ -1,68 +1,96 @@
 package view;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.TextInputDialog;
+import model.Prato;
 import model.TreeNode;
-import view.widget.DialogFimDerrota;
 import view.widget.DialogPerguntaPrato;
 
 import java.text.MessageFormat;
+import java.util.Optional;
 
 
-/**
- * View Root
- * <p>
- * Camada View do Design Pattern MVVM
- * Somente código manipulação da UI será implementada aqui.
- * Tudo que depender de regra de negócio será repassada para o ViewModel
- */
 public class RootView {
 
-    private final RootViewModel viewModel = new RootViewModel();
-    private final DialogPerguntaPrato dialogPerguntaPrato;
+    private final RootViewModel viewModel;
 
     public RootView() {
-        dialogPerguntaPrato = new DialogPerguntaPrato(this::sim, this::nao);
+        viewModel = new RootViewModel(this::perguntaCaracteristica, this::confirmarPrato, this::criaPratoDerrota, this::exibeAlertaVitoria);
     }
 
-    private void nao(final TreeNode<String> node) {
-        if (node.isFolha() || node.getProxImao() == null) {
-            new DialogFimDerrota("Qual prato você pensou?").show(comida -> afterComida(node, comida));
-        } else {
-            dialogPerguntaPrato.show(node.getProxImao());
+    private Boolean perguntaCaracteristica(TreeNode<Prato> nodePrato) {
+        final DialogPerguntaPrato dialog = new DialogPerguntaPrato(
+                "Tem esta caracteristica?", MessageFormat.format("Seu prato é {0}?", nodePrato.getValor().getCaracteristica().toLowerCase()));
+        final Optional<ButtonType> buttonType = dialog.showAndWait();
+        if (buttonType.isPresent()) {
+            if (buttonType.get().getButtonData() == ButtonBar.ButtonData.YES) {
+                return true;
+            } else if (buttonType.get().getButtonData() == ButtonBar.ButtonData.NO) {
+                return false;
+            }
         }
+        return null;
     }
 
-    private void afterComida(final TreeNode<String> node, final String comida) {
-        final String message = MessageFormat.format("{0} é __________ e {1} não:", comida, node.getValor());
-        new DialogFimDerrota(message).show(caract -> afterCaracteristica(node, caract, comida));
-    }
-
-    private void afterCaracteristica(final TreeNode<String> node, final String caracteristica, final String comida) {
-        node.getPai().addNode(caracteristica).addNode(comida);
-    }
-
-    private void sim(TreeNode<String> node) {
-        if (node.isFolha()) {
-            final Alert messageSucesso = new Alert(Alert.AlertType.INFORMATION);
-            messageSucesso.setHeaderText(null);
-            messageSucesso.setTitle("Sucesso!");
-            messageSucesso.setContentText(MessageFormat.format("Acertei {0}. Cada um com seu gosto!", node.getValor()));
-            messageSucesso.showAndWait();
-        } else {
-            dialogPerguntaPrato.show(node.getFilhos().get(0));
+    private Boolean confirmarPrato(TreeNode<Prato> nodePrato) {
+        final DialogPerguntaPrato dialog = new DialogPerguntaPrato(
+                "Este é o seu prato?", MessageFormat.format("Seu prato é {0}?", nodePrato.getValor().getNome().toLowerCase()));
+        final Optional<ButtonType> buttonType = dialog.showAndWait();
+        if (buttonType.isPresent()) {
+            if (buttonType.get().getButtonData() == ButtonBar.ButtonData.YES) {
+                return true;
+            } else if (buttonType.get().getButtonData() == ButtonBar.ButtonData.NO) {
+                return false;
+            }
         }
+        return null;
+    }
+
+    private Prato criaPratoDerrota(final Prato prato) {
+
+        final TextInputDialog nomeDialog = new TextInputDialog();
+        nomeDialog.setTitle("Não sei no que você pensou");
+        nomeDialog.setHeaderText(null);
+        nomeDialog.setContentText("Qual o prato que você pensou?");
+        Optional<String> nomeOptional = nomeDialog.showAndWait();
+
+        if (nomeOptional.isPresent()) {
+            final String nome = nomeOptional.get();
+
+            final TextInputDialog caracteristicaDialog = new TextInputDialog();
+            caracteristicaDialog.setTitle("Não sei no que você pensou");
+            caracteristicaDialog.setHeaderText(null);
+            if (prato != null)
+                caracteristicaDialog.setContentText(MessageFormat.format("{0} é ________, mas {1} não.", nome, prato.getNome()));
+            else
+                caracteristicaDialog.setContentText(MessageFormat.format("{0} é ________.", nome));
+
+            final Optional<String> caractOptional = caracteristicaDialog.showAndWait();
+
+            if (caractOptional.isPresent()) {
+                final String caracteristica = caractOptional.get();
+
+                return new Prato(nome, caracteristica);
+            }
+        }
+
+        return null;
+    }
+
+    private void exibeAlertaVitoria(Prato prato) {
+        final Alert msgVitoria = new Alert(Alert.AlertType.INFORMATION);
+        msgVitoria.setHeaderText(null);
+        msgVitoria.setTitle("Vitória");
+        msgVitoria.setContentText(MessageFormat.format("Acertei, sabia que você gostava de {0}", prato.getNome()));
+        msgVitoria.showAndWait();
     }
 
     @FXML
-    public void iniciarClickHandle(ActionEvent event) {
-        dialogPerguntaPrato.show(this.viewModel.getRoot().getFilhos().get(0));
+    public void iniciarClickHandle() {
+        this.viewModel.iniciarProcura();
     }
-
-    // TODO: Implementar evento do botão inciar
-
-    // TODO: Implementar o fluxo dos dialogos de pergunta. Para simplicidade será utilizada dialogos default do
-    // TODO: JavaFX
 
 }

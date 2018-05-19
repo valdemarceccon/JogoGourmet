@@ -20,8 +20,6 @@ public class TreeNode<T> implements Iterable<TreeNode<T>> {
     private final TreeNode<T> pai;
     private final List<TreeNode<T>> filhos;
 
-    private TreeNode<T> proxImao = null;
-
     public TreeNode(TreeNode<T> pai, T valor) {
         this.valor = valor;
         this.filhos = new LinkedList<>();
@@ -38,26 +36,12 @@ public class TreeNode<T> implements Iterable<TreeNode<T>> {
         this.filhos.forEach(action);
     }
 
-    /**
-     * Cria um novo node filho, e já configura com os valores necessários.
-     *
-     * @param valor
-     * @return
-     */
     public TreeNode<T> addNode(T valor) {
         final TreeNode<T> node = new TreeNode<>(this, valor);
-        if (!this.filhos.isEmpty()) {
-            this.filhos.get(this.filhos.size() - 1).setProxImao(node);
-        }
         this.filhos.add(node);
         return node;
     }
 
-    /**
-     * Método de conveniência, para indicar se o Node é folha da árvore ou não.
-     *
-     * @return true se o node não tiver filhos, false se tiver filhos
-     */
     public boolean isFolha() {
         return this.filhos.isEmpty();
     }
@@ -72,13 +56,5 @@ public class TreeNode<T> implements Iterable<TreeNode<T>> {
 
     public List<TreeNode<T>> getFilhos() {
         return filhos;
-    }
-
-    public TreeNode<T> getProxImao() {
-        return proxImao;
-    }
-
-    private void setProxImao(TreeNode<T> proxImao) {
-        this.proxImao = proxImao;
     }
 }
