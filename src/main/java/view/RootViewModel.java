@@ -21,10 +21,13 @@ class RootViewModel {
         this.onPalpite = onPalpite;
         this.onDerrota = onDerrota;
         this.onVitoria = onVitoria;
-        this.root = new TreeNode<>(null, null);
+//        this.root = new TreeNode<>(null, null);
 
-        this.root.addNode(new Prato("Lasanha", "Massa"));
-        this.root.addNode(new Prato("Bolo de chocolate", "Sobremesa"));
+        this.root = new TreeNode<>(null, new Prato("Lasanha", "Massa"));
+        final TreeNode<Prato> nao = new TreeNode<>(root, new Prato("Bolo de chocolate", "Sobremesa"));
+
+        root.setNaoNode(nao);
+
     }
 
     void iniciarProcura() {
@@ -32,33 +35,33 @@ class RootViewModel {
     }
 
     private void procurar(final TreeNode<Prato> pratoNode) {
-
-        for (TreeNode<Prato> filho : pratoNode.getFilhos()) {
-            final Boolean result = this.onProxPrato.apply(filho);
-            if (result == null) return;
-            if (result) {
-                encontrou(filho);
-                return;
-            }
-        }
-        palpite(pratoNode);
-    }
-
-    private void encontrou(final TreeNode<Prato> pratoNode) {
-        if (!pratoNode.isFolha()) {
-            procurar(pratoNode);
-        } else {
+        if (pratoNode.isFolha()) {
             palpite(pratoNode);
         }
+        else {
+            final boolean clicouSim = onProxPrato.apply(pratoNode);
+            final TreeNode<Prato> proximoPrato = pratoNode.getProx(clicouSim);
+            if (proximoPrato == null)
+                palpite(pratoNode);
+            else
+                procurar(proximoPrato);
+        }
+
+
     }
 
     private void palpite(final TreeNode<Prato> pratoNode) {
-
-        final Boolean result = pratoNode == root ? null : onPalpite.apply(pratoNode);
-        if (result != null && result) {
+        final boolean result = onPalpite.apply(pratoNode);
+        if (result) {
             onVitoria.accept(pratoNode.getValor());
         } else {
-            Optional.ofNullable(onDerrota.apply(pratoNode.getValor())).ifPresent(pratoNode::addNode);
+            final Prato novoPrato = onDerrota.apply(pratoNode.getValor());
+            if (novoPrato != null) {
+                final TreeNode<Prato> novoPratoNode = new TreeNode<>(null, novoPrato);
+                novoPratoNode.setNaoNode(pratoNode);
+                pratoNode.setNaoNode(novoPratoNode);
+            }
+//                    .ifPresent(novoPrato -> pratoNode.setNaoNode(new TreeNode<>(pratoNode, novoPrato)));
         }
 
     }

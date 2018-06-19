@@ -1,60 +1,68 @@
 package model;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.function.Consumer;
 
-/**
- * Tree genérica.
- * Contém o valor T, lista de Filhos que serão TreeNode<T> e o Pai do node.
- * Node sem pai é o root, Node sem filhos é uma folha da árvore.
- * <p>
- * Implementa Iterable como atalho para iterar os filhos diretos do Node
- *
- * @param <T> Tipo do valor do Node.
- */
-public class TreeNode<T> implements Iterable<TreeNode<T>> {
-    //TODO: Verificar a possibilidade de criar uma Tree específica para Caracteristicas (Nodes) e Pratos (Folhas)
+public class TreeNode<T> {
     private final T valor;
-    private final TreeNode<T> pai;
-    private final List<TreeNode<T>> filhos;
+//    private final TreeNode<T> pai;
+    private TreeNode<T> simNode;
+    private TreeNode<T> naoNode;
 
-    public TreeNode(TreeNode<T> pai, T valor) {
+    public TreeNode(final TreeNode<T> pai, final T valor) {
         this.valor = valor;
-        this.filhos = new LinkedList<>();
-        this.pai = pai;
+//        this.pai = pai;
     }
 
-    @Override
-    public Iterator<TreeNode<T>> iterator() {
-        return this.filhos.iterator();
+    public boolean proximo(final Consumer<TreeNode<T>> acao, boolean isSim) {
+        if (isSim) {
+            if (simNode != null) {
+                acao.accept(simNode);
+                return true;
+            }
+        }
+        else {
+            if (naoNode != null) {
+                acao.accept(naoNode);
+                return true;
+            }
+        }
+
+        return false;
     }
 
-    @Override
-    public void forEach(Consumer<? super TreeNode<T>> action) {
-        this.filhos.forEach(action);
-    }
+    public TreeNode<T> getProx(final boolean sim) {
+        if (sim)
+            return simNode;
+        else
+            return naoNode;
 
-    public TreeNode<T> addNode(T valor) {
-        final TreeNode<T> node = new TreeNode<>(this, valor);
-        this.filhos.add(node);
-        return node;
     }
 
     public boolean isFolha() {
-        return this.filhos.isEmpty();
+        return simNode == null && naoNode == null;
     }
 
     public T getValor() {
         return valor;
     }
 
-    public TreeNode<T> getPai() {
-        return pai;
+//    public TreeNode<T> getPai() {
+//        return pai;
+//    }
+
+    public TreeNode<T> getSimNode() {
+        return simNode;
     }
 
-    public List<TreeNode<T>> getFilhos() {
-        return filhos;
+    public void setSimNode(TreeNode<T> simNode) {
+        this.simNode = simNode;
+    }
+
+    public TreeNode<T> getNaoNode() {
+        return naoNode;
+    }
+
+    public void setNaoNode(TreeNode<T> naoNode) {
+        this.naoNode = naoNode;
     }
 }

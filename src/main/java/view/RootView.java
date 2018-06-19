@@ -21,7 +21,7 @@ public class RootView {
         viewModel = new RootViewModel(this::perguntaCaracteristica, this::confirmarPrato, this::criaPratoDerrota, this::exibeAlertaVitoria);
     }
 
-    private Boolean perguntaCaracteristica(TreeNode<Prato> nodePrato) {
+    private boolean perguntaCaracteristica(TreeNode<Prato> nodePrato) {
         final DialogPerguntaPrato dialog = new DialogPerguntaPrato(
                 "Tem esta caracteristica?", MessageFormat.format("Seu prato é {0}?", nodePrato.getValor().getCaracteristica().toLowerCase()));
         final Optional<ButtonType> buttonType = dialog.showAndWait();
@@ -32,7 +32,7 @@ public class RootView {
                 return false;
             }
         }
-        return null;
+        return false;
     }
 
     private Boolean confirmarPrato(TreeNode<Prato> nodePrato) {
