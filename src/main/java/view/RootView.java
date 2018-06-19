@@ -75,8 +75,6 @@ public class RootView {
         final TreeNode<String> sim = new TreeNode<String>(resultNode, nome);
         resultNode.setSimNode(sim);
         return resultNode;
-        // return "Seu prato é " + caracteristica + "?";
-        // return new String(nome, caracteristica);
       }
     }
 

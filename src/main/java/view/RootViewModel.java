@@ -19,7 +19,6 @@ class RootViewModel {
         this.onPalpite = onPalpite;
         this.onDerrota = onDerrota;
         this.onVitoria = onVitoria;
-//        this.root = new TreeNode<>(null, null);
 
         this.root = new TreeNode<String>(null, "Seu prato é massa?");
         final TreeNode<String> sim = new TreeNode<String>(root, "lasanha");
@@ -67,11 +66,7 @@ class RootViewModel {
               
                 
               pratoAtualNode.setPai(novoPrato);
-//                final TreeNode<String> novoStringNode = new TreeNode<>(null, novoString);
-//                novoStringNode.setNaoNode(StringNode);
-//                StringNode.setNaoNode(novoStringNode);
             }
-//                    .ifPresent(novoString -> StringNode.setNaoNode(new TreeNode<>(StringNode, novoString)));
         }
 
     }
