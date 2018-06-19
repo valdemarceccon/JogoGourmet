@@ -4,13 +4,13 @@ import java.util.function.Consumer;
 
 public class TreeNode<T> {
     private final T valor;
-//    private final TreeNode<T> pai;
+    private TreeNode<T> pai;
     private TreeNode<T> simNode;
     private TreeNode<T> naoNode;
 
     public TreeNode(final TreeNode<T> pai, final T valor) {
         this.valor = valor;
-//        this.pai = pai;
+        this.pai = pai;
     }
 
     public boolean proximo(final Consumer<TreeNode<T>> acao, boolean isSim) {
@@ -46,9 +46,13 @@ public class TreeNode<T> {
         return valor;
     }
 
-//    public TreeNode<T> getPai() {
-//        return pai;
-//    }
+    public TreeNode<T> getPai() {
+        return pai;
+    }
+    
+    public void setPai(TreeNode<T> novoPai) {
+      this.pai = novoPai;
+    }
 
     public TreeNode<T> getSimNode() {
         return simNode;

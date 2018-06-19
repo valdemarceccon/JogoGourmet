@@ -1,67 +1,77 @@
 package view;
 
-import model.Prato;
-import model.TreeNode;
-
-import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
+
+import model.TreeNode;
 
 
 class RootViewModel {
 
-    private final TreeNode<Prato> root;
-    private final Function<TreeNode<Prato>, Boolean> onProxPrato;
-    private final Function<TreeNode<Prato>, Boolean> onPalpite;
-    private final Function<Prato, Prato> onDerrota;
-    private final Consumer<Prato> onVitoria;
+    private final TreeNode<String> root;
+    private final Function<TreeNode<String>, Boolean> onProxString;
+    private final Function<TreeNode<String>, Boolean> onPalpite;
+    private final Function<String, TreeNode<String>> onDerrota;
+    private final Consumer<String> onVitoria;
 
-    RootViewModel(final Function<TreeNode<Prato>, Boolean> onProxNode, Function<TreeNode<Prato>, Boolean> onPalpite, Function<Prato, Prato> onDerrota, Consumer<Prato> onVitoria) {
-        this.onProxPrato = onProxNode;
+    RootViewModel(final Function<TreeNode<String>, Boolean> onProxNode, Function<TreeNode<String>, Boolean> onPalpite, Function<String, TreeNode<String>> onDerrota, Consumer<String> onVitoria) {
+        this.onProxString = onProxNode;
         this.onPalpite = onPalpite;
         this.onDerrota = onDerrota;
         this.onVitoria = onVitoria;
 //        this.root = new TreeNode<>(null, null);
 
-        this.root = new TreeNode<>(null, new Prato("Lasanha", "Massa"));
-        final TreeNode<Prato> nao = new TreeNode<>(root, new Prato("Bolo de chocolate", "Sobremesa"));
+        this.root = new TreeNode<String>(null, "Seu prato é massa?");
+        final TreeNode<String> sim = new TreeNode<String>(root, "lasanha");
+        final TreeNode<String> nao = new TreeNode<>(root, "bolo do chocolate?");
 
+        root.setSimNode(sim);
         root.setNaoNode(nao);
-
     }
 
     void iniciarProcura() {
         procurar(this.root);
     }
 
-    private void procurar(final TreeNode<Prato> pratoNode) {
-        if (pratoNode.isFolha()) {
-            palpite(pratoNode);
+    private void procurar(final TreeNode<String> StringNode) {
+        if (StringNode.isFolha()) {
+            palpite(StringNode);
         }
         else {
-            final boolean clicouSim = onProxPrato.apply(pratoNode);
-            final TreeNode<Prato> proximoPrato = pratoNode.getProx(clicouSim);
-            if (proximoPrato == null)
-                palpite(pratoNode);
+            final boolean clicouSim = onProxString.apply(StringNode);
+            final TreeNode<String> proximoString = StringNode.getProx(clicouSim);
+            if (proximoString == null)
+                palpite(StringNode);
             else
-                procurar(proximoPrato);
+                procurar(proximoString);
         }
 
 
     }
 
-    private void palpite(final TreeNode<Prato> pratoNode) {
-        final boolean result = onPalpite.apply(pratoNode);
+    private void palpite(final TreeNode<String> pratoAtualNode) {
+        final boolean result = onPalpite.apply(pratoAtualNode);
         if (result) {
-            onVitoria.accept(pratoNode.getValor());
+            onVitoria.accept(pratoAtualNode.getValor());
         } else {
-            final Prato novoPrato = onDerrota.apply(pratoNode.getValor());
+            final TreeNode<String> novoPrato = onDerrota.apply(pratoAtualNode.getValor());
             if (novoPrato != null) {
-                final TreeNode<Prato> novoPratoNode = new TreeNode<>(null, novoPrato);
-                novoPratoNode.setNaoNode(pratoNode);
-                pratoNode.setNaoNode(novoPratoNode);
+              novoPrato.setNaoNode(pratoAtualNode);
+              novoPrato.setPai(pratoAtualNode.getPai());
+              
+              if (novoPrato.getPai().getSimNode() == pratoAtualNode)
+                novoPrato.getPai().setSimNode(novoPrato);
+              else
+                novoPrato.getPai().setNaoNode(novoPrato);
+                
+              
+                
+              pratoAtualNode.setPai(novoPrato);
+//                final TreeNode<String> novoStringNode = new TreeNode<>(null, novoString);
+//                novoStringNode.setNaoNode(StringNode);
+//                StringNode.setNaoNode(novoStringNode);
             }
-//                    .ifPresent(novoPrato -> pratoNode.setNaoNode(new TreeNode<>(pratoNode, novoPrato)));
+//                    .ifPresent(novoString -> StringNode.setNaoNode(new TreeNode<>(StringNode, novoString)));
         }
 
     }

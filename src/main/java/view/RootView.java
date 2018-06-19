@@ -1,96 +1,99 @@
 package view;
 
+import java.text.MessageFormat;
+import java.util.Optional;
+
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextInputDialog;
-import model.Prato;
 import model.TreeNode;
 import view.widget.DialogPerguntaPrato;
 
-import java.text.MessageFormat;
-import java.util.Optional;
-
-
 public class RootView {
 
-    private final RootViewModel viewModel;
+  private final RootViewModel viewModel;
 
-    public RootView() {
-        viewModel = new RootViewModel(this::perguntaCaracteristica, this::confirmarPrato, this::criaPratoDerrota, this::exibeAlertaVitoria);
-    }
+  public RootView() {
+    viewModel = new RootViewModel(this::perguntaCaracteristica, this::confirmarString, this::criaPratoDerrota, this::exibeAlertaVitoria);
+  }
 
-    private boolean perguntaCaracteristica(TreeNode<Prato> nodePrato) {
-        final DialogPerguntaPrato dialog = new DialogPerguntaPrato(
-                "Tem esta caracteristica?", MessageFormat.format("Seu prato é {0}?", nodePrato.getValor().getCaracteristica().toLowerCase()));
-        final Optional<ButtonType> buttonType = dialog.showAndWait();
-        if (buttonType.isPresent()) {
-            if (buttonType.get().getButtonData() == ButtonBar.ButtonData.YES) {
-                return true;
-            } else if (buttonType.get().getButtonData() == ButtonBar.ButtonData.NO) {
-                return false;
-            }
-        }
+  private boolean perguntaCaracteristica(TreeNode<String> nodeString) {
+    final DialogPerguntaPrato dialog = new DialogPerguntaPrato(
+        "Tem esta caracteristica?", nodeString.getValor());
+    final Optional<ButtonType> buttonType = dialog.showAndWait();
+    if (buttonType.isPresent()) {
+      if (buttonType.get().getButtonData() == ButtonBar.ButtonData.YES) {
+        return true;
+      }
+      else if (buttonType.get().getButtonData() == ButtonBar.ButtonData.NO) {
         return false;
+      }
+    }
+    return false;
+  }
+
+  private Boolean confirmarString(TreeNode<String> nodeString) {
+    final DialogPerguntaPrato dialog = new DialogPerguntaPrato(
+        "Este é o seu prato?", MessageFormat.format("Seu prato é {0}?", nodeString.getValor()));
+    final Optional<ButtonType> buttonType = dialog.showAndWait();
+    if (buttonType.isPresent()) {
+      if (buttonType.get().getButtonData() == ButtonBar.ButtonData.YES) {
+        return true;
+      }
+      else if (buttonType.get().getButtonData() == ButtonBar.ButtonData.NO) {
+        return false;
+      }
+    }
+    return null;
+  }
+
+  private TreeNode<String> criaPratoDerrota(final String prato) {
+
+    final TextInputDialog nomeDialog = new TextInputDialog();
+    nomeDialog.setTitle("Não sei no que você pensou");
+    nomeDialog.setHeaderText(null);
+    nomeDialog.setContentText("Qual o prato que você pensou?");
+    Optional<String> nomeOptional = nomeDialog.showAndWait();
+
+    if (nomeOptional.isPresent() && !nomeOptional.get().trim().isEmpty()) {
+      final String nome = nomeOptional.get();
+
+      final TextInputDialog caracteristicaDialog = new TextInputDialog();
+      caracteristicaDialog.setTitle("Não sei no que você pensou");
+      caracteristicaDialog.setHeaderText(null);
+      if (prato != null)
+        caracteristicaDialog.setContentText(MessageFormat.format("{0} é ________, mas {1} não.", nome, prato));
+      else
+        caracteristicaDialog.setContentText(MessageFormat.format("{0} é ________.", nome));
+
+      final Optional<String> caractOptional = caracteristicaDialog.showAndWait();
+
+      if (caractOptional.isPresent() && !caractOptional.get().trim().isEmpty()) {
+        final TreeNode<String> resultNode = new TreeNode<String>(null, MessageFormat.format("Seu prato é {0}?", caractOptional.get()));
+        final TreeNode<String> sim = new TreeNode<String>(resultNode, nome);
+        resultNode.setSimNode(sim);
+        return resultNode;
+        // return "Seu prato é " + caracteristica + "?";
+        // return new String(nome, caracteristica);
+      }
     }
 
-    private Boolean confirmarPrato(TreeNode<Prato> nodePrato) {
-        final DialogPerguntaPrato dialog = new DialogPerguntaPrato(
-                "Este é o seu prato?", MessageFormat.format("Seu prato é {0}?", nodePrato.getValor().getNome().toLowerCase()));
-        final Optional<ButtonType> buttonType = dialog.showAndWait();
-        if (buttonType.isPresent()) {
-            if (buttonType.get().getButtonData() == ButtonBar.ButtonData.YES) {
-                return true;
-            } else if (buttonType.get().getButtonData() == ButtonBar.ButtonData.NO) {
-                return false;
-            }
-        }
-        return null;
-    }
+    return null;
+  }
 
-    private Prato criaPratoDerrota(final Prato prato) {
+  private void exibeAlertaVitoria(String prato) {
+    final Alert msgVitoria = new Alert(Alert.AlertType.INFORMATION);
+    msgVitoria.setHeaderText(null);
+    msgVitoria.setTitle("Vitória");
+    msgVitoria.setContentText(MessageFormat.format("Acertei, sabia que você gostava de {0}", prato));
+    msgVitoria.showAndWait();
+  }
 
-        final TextInputDialog nomeDialog = new TextInputDialog();
-        nomeDialog.setTitle("Não sei no que você pensou");
-        nomeDialog.setHeaderText(null);
-        nomeDialog.setContentText("Qual o prato que você pensou?");
-        Optional<String> nomeOptional = nomeDialog.showAndWait();
-
-        if (nomeOptional.isPresent() && !nomeOptional.get().trim().isEmpty()) {
-            final String nome = nomeOptional.get();
-
-            final TextInputDialog caracteristicaDialog = new TextInputDialog();
-            caracteristicaDialog.setTitle("Não sei no que você pensou");
-            caracteristicaDialog.setHeaderText(null);
-            if (prato != null)
-                caracteristicaDialog.setContentText(MessageFormat.format("{0} é ________, mas {1} não.", nome, prato.getNome()));
-            else
-                caracteristicaDialog.setContentText(MessageFormat.format("{0} é ________.", nome));
-
-            final Optional<String> caractOptional = caracteristicaDialog.showAndWait();
-
-            if (caractOptional.isPresent() && !caractOptional.get().trim().isEmpty()) {
-                final String caracteristica = caractOptional.get();
-
-                return new Prato(nome, caracteristica);
-            }
-        }
-
-        return null;
-    }
-
-    private void exibeAlertaVitoria(Prato prato) {
-        final Alert msgVitoria = new Alert(Alert.AlertType.INFORMATION);
-        msgVitoria.setHeaderText(null);
-        msgVitoria.setTitle("Vitória");
-        msgVitoria.setContentText(MessageFormat.format("Acertei, sabia que você gostava de {0}", prato.getNome()));
-        msgVitoria.showAndWait();
-    }
-
-    @FXML
-    public void iniciarClickHandle() {
-        this.viewModel.iniciarProcura();
-    }
+  @FXML
+  public void iniciarClickHandle() {
+    this.viewModel.iniciarProcura();
+  }
 
 }
